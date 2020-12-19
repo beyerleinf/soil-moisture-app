@@ -1,0 +1,25 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get"],
+      "route": "devices/{deviceId}/config"
+    },
+    {
+      "direction": "in",
+      "type": "table",
+      "name": "deviceConfigs",
+      "tableName": "DeviceConfigs",
+      "connection": "ConnectionStringStorage"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    }
+  ],
+  "scriptFile": "../dist/get-device-config/index.js"
+}
