@@ -1,32 +1,63 @@
-import { TableClient, TablesSharedKeyCredential } from '@azure/data-tables';
+import { TableClient } from '@azure/data-tables';
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { v4 } from 'uuid';
+import { DeviceConfig, isIngestData } from '../models';
 
-const httpTrigger: AzureFunction = async function (ctx: Context, req: HttpRequest): Promise<void> {
+const httpTrigger: AzureFunction = async function (
+  ctx: Context,
+  req: HttpRequest,
+  deviceConfigs: DeviceConfig[]
+): Promise<void> {
   if (process.env.DEBUG_AZURE_FUNCTION) {
     ctx.log.info('Received HTTP Request:', JSON.stringify(req, null, 2));
   }
 
-  const account = process.env.StorageAccountName || '';
-  const accountKey = process.env.StorageAccountKey || '';
-  const credential = new TablesSharedKeyCredential(account, accountKey);
-  const client = new TableClient(`https://${account}.table.core.windows.net`, 'LatestSensorData', credential);
+  const ingestData = req.body;
 
-  ctx.bindings.sensorDataTableBinding = [
-    {
-      PartitionKey: req.body.deviceId,
-      RowKey: `${v4()}_${new Date().getTime()}`,
-      moisture: req.body.moisture,
-      rawValue: req.body.rawValue,
-    },
-  ];
+  if (!isIngestData(ingestData)) {
+    ctx.res = {
+      status: 400,
+      body: {
+        error: 'EINVALID',
+        message: 'Invalid data received.',
+      },
+    };
 
-  await client.upsertEntity(
+    return;
+  }
+
+  if (!deviceConfigs.find(config => config.RowKey === ingestData.deviceId)) {
+    ctx.res = {
+      status: 403,
+      body: {
+        error: 'EUNKNOWNDEVICE',
+        message: 'Unknown device.',
+      },
+    };
+
+    return;
+  }
+
+  const connectionString = process.env.ConnectionStringStorage || '';
+  const latestSensorData = TableClient.fromConnectionString(connectionString, 'LatestSensorData');
+  const sensorData = TableClient.fromConnectionString(connectionString, 'SensorData');
+
+  const data = {
+    moisture: ingestData.moisture,
+    rawValue: ingestData.rawValue,
+  };
+
+  await sensorData.createEntity({
+    partitionKey: ingestData.deviceId,
+    rowKey: `${v4()}_${new Date().getTime()}`,
+    ...data,
+  });
+
+  await latestSensorData.upsertEntity(
     {
       partitionKey: 'latest',
-      rowKey: req.body.deviceId,
-      moisture: req.body.moisture,
-      rawValue: req.body.rawValue,
+      rowKey: ingestData.deviceId,
+      ...data,
     },
     'Replace'
   );

@@ -8,16 +8,16 @@
       "methods": ["post"]
     },
     {
+      "direction": "in",
+      "type": "table",
+      "name": "deviceConfigs",
+      "tableName": "DeviceConfigs",
+      "connection": "ConnectionStringStorage"
+    },
+    {
       "type": "http",
       "direction": "out",
       "name": "res"
-    },
-    {
-      "type": "table",
-      "direction": "out",
-      "name": "sensorDataTableBinding",
-      "tableName": "SensorData",
-      "connection": "ConnectionStringStorage"
     }
   ],
   "scriptFile": "../dist/data-ingest/index.js"
