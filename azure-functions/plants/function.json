@@ -1,0 +1,32 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get"],
+      "route": "plants"
+    },
+    {
+      "direction": "in",
+      "type": "table",
+      "name": "plants",
+      "tableName": "Plants",
+      "connection": "ConnectionStringStorage"
+    },
+    {
+      "direction": "in",
+      "type": "table",
+      "name": "latestSensorData",
+      "tableName": "LatestSensorData",
+      "connection": "ConnectionStringStorage"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    }
+  ],
+  "scriptFile": "../dist/plants/index.js"
+}
