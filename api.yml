@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: Plant Manager API
+  description: This document describes the Plant Manager API.
+  version: 0.0.1
+  contact:
+    name: Fabian Beyerlein
+    url: https://github.com/beyerleinf/soil-moisture-app
+    email: dev@beyerleinf.de
+
+paths:
+  /plants:
+    get:
+      description: Get all plants and their current moisture.
+      tags:
+        - plants
+      responses:
+        "200":
+          description: A list of pets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlantData"
+
+components:
+  schemas:
+    PlantData:
+      type: object
+      required:
+        - id
+        - name
+        - moisture
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        moisture:
+          type: number
