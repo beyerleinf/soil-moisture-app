@@ -1,12 +1,16 @@
+import { Avatar, makeStyles } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
+import PropTypes, { InferProps } from "prop-types";
 import React from "react";
-import "./Header.scss";
+
+const headerPropTypes = {
+  menuButtonClick: PropTypes.any.isRequired,
+};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,27 +22,39 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
   },
+  avatar: {
+    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+  },
 }));
 
-export const Header: React.FC = () => {
+export const Header: React.FC<InferProps<typeof headerPropTypes>> = ({ menuButtonClick }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={menuButtonClick}
+          >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            News
+            Plant Manager
           </Typography>
-          <Button color="inherit">Login</Button>
+          {/* <Button color="inherit">Login</Button> */}
+          <Button>
+            <Avatar className={classes.avatar}>FB</Avatar>
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
-    // <div className="relative bg-white">
-    //   <ThemeToggler></ThemeToggler>
-    // </div>
   );
 };
+
+Header.propTypes = headerPropTypes;

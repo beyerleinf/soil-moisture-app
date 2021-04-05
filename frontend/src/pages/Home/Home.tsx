@@ -1,18 +1,25 @@
-import { Page, Toolbar, Button } from "react-onsenui";
-import { Header } from "../../components/common/";
-// import {ThemeContext} from '../../context'
-import React, { useContext } from "react";
+import { makeStyles } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { Suspense } from "react";
+import PlantsList from "../../components/PlantsList";
+import { fetchPlants } from "../../data/plants-service";
 
-export const HomePage: React.FC = () => {
-  // const [context, setContext] = useContext(ThemeContext);
+const useStyles = makeStyles(theme => ({
+  root: {
+    margin: theme.spacing(2),
+  },
+}));
+
+const HomePage: React.FC = () => {
+  const classes = useStyles();
+
   return (
-    <div>
-      <div className="bg-white dark:bg-gray-800">
-        <h1 className="text-gray-900 dark:text-white">Dark mode is here!</h1>
-        <p className="text-gray-600 dark:text-gray-300">Lorem ipsum...</p>
-      </div>
-
-      <button></button>
+    <div className={classes.root}>
+      <Suspense fallback={<CircularProgress />}>
+        <PlantsList resource={fetchPlants()} />
+      </Suspense>
     </div>
   );
 };
+
+export default HomePage;
