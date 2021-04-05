@@ -1,5 +1,5 @@
-export interface DeviceConfig {
-  RowKey: string;
-  dry: number;
-  wet: number;
+import { Base } from './base';
+
+export interface DeviceConfig extends Base {
+  measurementInterval: number;
 }
